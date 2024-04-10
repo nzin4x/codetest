@@ -1,0 +1,32 @@
+from heapq import heappop, heappush
+
+heap = [4,5,6,7]
+
+print(heap)
+heappush(heap, 9)
+print(heap)
+heappush(heap, 6)
+print(heap)
+heappush(heap, 7)
+print(heap)
+heappush(heap, 3)
+print(heap)
+heappush(heap, 1)
+print(heap)
+heappush(heap, 1)
+print(heap)
+heappush(heap, 1)
+print(heap)
+heappush(heap, 1)
+print(heap)
+heappush(heap, 2)
+print(heap)
+heappush(heap, 5)
+print(heap)
+heappush(heap, 4)
+
+print(heap)
+print(heappop(heap))
+print(heap)
+print(heappop(heap))
+print(heap)
