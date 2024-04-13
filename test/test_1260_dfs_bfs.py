@@ -1,40 +1,108 @@
-import functools
-from collections import deque
+"""
+4 5 1
+1 2
+1 3
+1 4
+2 4
+3 4
+
+1 2 4 3 dfs
+1 2 3 4 bfs
+"""
 import sys
-
-input = sys.stdin.readline
-print = sys.stdout.write
+from collections import deque
 
 
-def solve(lq=None, q=None, lt=None, t=None):
+def build_connection(info, connection_info):
+    vertex_cnt, edge_cnt, info_line_cnt = map(int, info.split())
+    plist = connection_info.split("\n")
 
-    lq = lq if lq != None else input().strip()
-    q = q if q != None else input().strip()
-    lt = lt if lt != None else input().strip()
-    t = t if t != None else input().strip()
+    conn = [[] for _ in range(vertex_cnt + 1)]
 
-    nm = dict()
-    for n in q.split(' '):
-        # nm[n] = nm[n] + 1 if n in nm else nm[n] = 1
-        if n in nm:
-            nm[n] = nm[n] + 1
-        else:
-            nm[n] = 1
+    for v in plist:
+        _from, _to = map(int, v.split())
+        conn[_from].append(_to)
+        conn[_to].append(_from)
 
-    ans = []
-    for n in t.split(' '):
-        if n in nm:
-            ans.append(str(nm[n]))
-        else:
-            ans.append(str(0))
+    return conn
 
-    return (' '.join(ans))
 
-    # return "3 0 0 1 2 0 0 2"
+def test_connection():
+    """
+    4 5 1
+    1 2
+    1 3
+    1 4
+    2 4
+    3 4
+    :return:
+    """
+
+    conn = get_connection()
+
+    assert 3 in conn[4]
+    assert 3 in conn[1]
+
+
+def get_connection():
+    return build_connection("4 5 1", """1 2
+1 3
+1 4
+2 4
+3 4""")
+
+
+def bfs(conn, start=1):
+    visited_seq = list()
+    q = deque()
+
+    q.append(start)
+    visited_seq.append(start)
+
+    while q:
+        current_pos = q.popleft()
+        for next_candidate in sorted(conn[current_pos]):
+            if next_candidate not in visited_seq:
+                q.append(next_candidate)
+                visited_seq.append(next_candidate)
+
+    return visited_seq
+
+
+def dfs(conn, start=1):
+    visited_seq = list()
+
+    def dfs_core(current_pos):
+        visited_seq.append(current_pos)
+
+        for next_candidate in sorted(conn[current_pos]):
+            if next_candidate not in visited_seq:
+                dfs_core(next_candidate)
+
+    dfs_core(start)
+
+    return visited_seq
+
+
+def test_dfs():
+    conn = get_connection()
+    assert "1 2 4 3" == " ".join(map(str, dfs(conn, 1)))
+
+
+def test_bfs():
+    conn = get_connection()
+    assert "1 2 3 4" == " ".join(map(str, bfs(conn, 1)))
+
 
 if __name__ == '__main__':
-    ans = solve()
-    print(str(ans))
+    v_cnt, e_cnt, start = map(int, sys.stdin.readline().split())
 
-def test_ex_1():
-    assert solve(lq="10", q="6 3 2 10 10 10 -10 -10 7 3", lt="8", t="10 9 -5 2 3 4 5 -10") == "3 0 0 1 2 0 0 2"
+    conn = [[] for _ in range(v_cnt + 1)]
+
+    for _ in range(e_cnt):
+        _from, _to = map(int, sys.stdin.readline().split())
+        conn[_from].append(_to)
+        conn[_to].append(_from)
+
+    print(" ".join(map(str, dfs(conn, start))))
+    print(" ".join(map(str, bfs(conn, start))))
